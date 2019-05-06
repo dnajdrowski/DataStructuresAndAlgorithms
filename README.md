@@ -6,3 +6,5 @@ Data Structures and Algorithms UG
 * Red Black Trees
 * Huffman Coding
 * Longest Common Subsequence
+* Kruskal's Minimum Spanning Tree Algorithm
+* Unions
