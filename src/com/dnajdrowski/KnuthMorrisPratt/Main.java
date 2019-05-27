@@ -11,21 +11,26 @@ public class Main {
 
 
     public static void main(String[] args) {
-        char[] pattern = new char[arrayLenght("wzorzec1.txt")];
-        char[] text = new char[arrayLenght("tekst1.txt")];
+        int patternLen = arrayLenght("wzorzec.txt");
+        int textLen = arrayLenght("tekst.txt");
+        char[] pattern = new char[patternLen];
+        char[] text = new char[textLen];
 
-        loadArray("wzorzec1.txt", pattern);
-        loadArray("tekst1.txt", text);
+        loadArray("wzorzec.txt", pattern);
+        loadArray("tekst.txt", text);
 
-        long millisActualTime = System.nanoTime();
+        long millisActualTime = System.currentTimeMillis();
         Simple(pattern, text);
-        long executionTime = System.nanoTime() - millisActualTime;
-        System.out.println(executionTime);
-        //Rabin_Karp(pattern, text);
-        millisActualTime = System.nanoTime() ;
+        long executionTime = System.currentTimeMillis() - millisActualTime;
+        System.out.println((double) executionTime / 1000 + " s");
+        millisActualTime = System.currentTimeMillis();
+        Rabin_Karp(pattern, text);
+        executionTime = System.currentTimeMillis() - millisActualTime;
+        System.out.println((double) executionTime / 1000 + " s");
+        millisActualTime = System.currentTimeMillis() ;
         Knuth_Morris_Pratt(pattern, text);
-        executionTime = System.nanoTime()  - millisActualTime;
-        System.out.println(executionTime);
+        executionTime = System.currentTimeMillis()  - millisActualTime;
+        System.out.println((double) executionTime / 1000 + " s");
 
     }
 
@@ -76,49 +81,52 @@ public class Main {
             for (int j = 0; j < pattern.length; j++) {
                 if (!(pattern[j] == text[s + j]))
                     break;
-                if (j == pattern.length-10) {
-                    System.out.println("Pattern found: start on i = " + (s + 1) + ", ends on i = " + (s + pattern.length) + ".");
+                if (j == pattern.length - 1) {
+                    System.out.println("Pattern found: starts on i = " + (s + 1) + ", ends on i = " + (s + pattern.length) + ".");
                     result = true;
                 }
             }
         }
         if (!result) {
-            System.out.println("Pattern not found!");
+            System.out.println("Pattern not found.");
         }
     }
 
     private static void Rabin_Karp(char[] pattern, char[] text) {
         System.out.println("\nRabin-Karp algorithm:\n");
         boolean result = false;
-        int h = 1;
-        for (int i = 0; i < pattern.length - 1; i++) {
+        int h = 1, j, s;
+        for(int i = 1; i < pattern.length; i++) {
             h = (h * ALPHABET_SIZE) % PRIME_NUMBER;
         }
         int p = 0;
         int t = 0;
-        for(int i = 0; i < pattern.length - 1; i++) {
-            p = (ALPHABET_SIZE * p + pattern[i]) % PRIME_NUMBER;
-            t = (ALPHABET_SIZE * t + text[i]) % PRIME_NUMBER;
+        for(int i = 0; i < pattern.length; i++) {
+            p = ((ALPHABET_SIZE * p) + pattern[i]) % PRIME_NUMBER;
+            t = ((ALPHABET_SIZE * t) + text[i]) % PRIME_NUMBER;
         }
-
-        for(int s = 0; s < text.length - pattern.length; s++) {
-            if (p == t) {
-                for (int j = 0; j < pattern.length; j++) {
-                    if (!(pattern[j] == text[s + j]))
-                        break;
-                    if (j == pattern.length - 1) {
-                        System.out.println("Pattern found: start on i = " + (s + 1) + ", ends on i = " + (s + pattern.length) + ".");
+        for(s = 0; s <= text.length - pattern.length; s++) {
+            if(p == t) {
+                    for (j = 0; j < pattern.length; j++) {
+                        if (!(pattern[j] == text[s + j])) {
+                            break;
+                        }
+                    }
+                    if(j == pattern.length) {
+                        System.out.println("Pattern found: starts on i = " + (s + 1) + ", ends on i = " + (s + pattern.length) + ".");
                         result = true;
                     }
-                }
-                if (!result) {
-                    System.out.println("Pattern not found!");
-                }
             }
-            int t1 = (text[s] * h) % PRIME_NUMBER;
-            if (t < t1)
-                t += PRIME_NUMBER;
-            t = (ALPHABET_SIZE * (t - t1) + text[s + pattern.length]) % PRIME_NUMBER;
+            if(s < text.length - pattern.length) {
+                int t1= (text[s] * h) % PRIME_NUMBER;
+                if(t < t1) {
+                    t += PRIME_NUMBER;
+                }
+                t = (ALPHABET_SIZE * (t - t1) + text[s + pattern.length]) % PRIME_NUMBER;
+            }
+        }
+        if(!result) {
+            System.out.println("Pattern not found.");
         }
     }
 
@@ -133,12 +141,12 @@ public class Main {
             }
             q++;
             if (q == pattern.length) {
-                System.out.println("Pattern found: start on i = " + (i - pattern.length + 1) + ", ends on i = " + i + ".");
+                System.out.println("Pattern found: starts on i = " + (i - pattern.length + 1) + ", ends on i = " + i + ".");
                 q = pi[q];
                 result = true;
             } else {
                 if((i == text.length - 1) && (!result)) {
-                    System.out.println("Pattern not found");
+                    System.out.println("Pattern not found.");
                 }
             }
         }
@@ -159,8 +167,6 @@ public class Main {
         return pi;
     }
 }
-
-
 
 
 
